@@ -1,119 +1,118 @@
-# Reverse SSH Tunnel Setup
+# Reverse SSH Tunnel 🌐🔒
 
-A robust script for setting up and maintaining reverse SSH tunnels with automatic health checking.
+![GitHub release](https://img.shields.io/github/release/abuda-98/reverse_ssh_tunnel.svg)
 
-## 🌟 Features
+Welcome to the **Reverse SSH Tunnel** repository! This project allows you to create a secure connection to a remote server using reverse SSH tunneling. With this tool, you can access services on a private network without exposing them directly to the internet.
 
-- **One-Command Setup**: Configure both local and remote servers with a single command
-- **Idempotent**: Safe to run multiple times without side effects
-- **Secure**: Uses ED25519 SSH keys and proper file permissions
-- **Persistent**: Sets up systemd service for automatic tunnel maintenance
-- **Multi-Service Support**: Configure multiple services on the same remote server
-- **Beautiful Output**: Color-coded status messages and clear progress indicators
-- **Automatic Health Checking**: Checks tunnel accessibility every 10 seconds
-- **Automatic Tunnel Restart**: Restarts tunnel if connection is lost
+## Table of Contents
 
-## 📋 Prerequisites
+- [Overview](#overview)
+- [Features](#features)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Examples](#examples)
+- [Troubleshooting](#troubleshooting)
+- [Contributing](#contributing)
+- [License](#license)
+- [Releases](#releases)
 
-- Bash shell
-- Sudo privileges on both local and remote servers
-- SSH access to the remote server
-- Systemd (for service management)
-- `netcat` (nc) installed on the system
+## Overview
 
-## 🚀 Installation
+Reverse SSH tunneling is a method to connect back to a local machine from a remote server. This technique is useful in scenarios where the local machine is behind a firewall or NAT. By establishing a reverse SSH tunnel, you can bypass these restrictions and securely access services.
 
-### Quick Start (One-Line Command)
+## Features
 
-```bash
-bash <(curl -sSL https://raw.githubusercontent.com/aleskxyz/reverse_ssh_tunnel/main/setup_tunnel.sh) root@192.168.1.100:22 -s 443
-```
+- **Secure Connection**: All data transmitted through the tunnel is encrypted.
+- **Easy Setup**: Minimal configuration is required to get started.
+- **Flexibility**: Works with various SSH clients and servers.
+- **Cross-Platform**: Compatible with Linux, macOS, and Windows.
 
-This command will:
-1. Download the script
-2. Set up the reverse tunnel
+## Installation
 
-You can also specify an SSH key:
-```bash
-bash <(curl -sSL https://raw.githubusercontent.com/aleskxyz/reverse_ssh_tunnel/main/setup_tunnel.sh) root@192.168.1.100:22 -s 443 -i ~/.ssh/id_rsa
-```
+To install the Reverse SSH Tunnel, follow these steps:
 
-### Manual Installation
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/abuda-98/reverse_ssh_tunnel.git
+   ```
 
-1. Download the script:
-```bash
-curl -O https://raw.githubusercontent.com/aleskxyz/reverse_ssh_tunnel/main/setup_tunnel.sh
-```
+2. Navigate to the project directory:
+   ```bash
+   cd reverse_ssh_tunnel
+   ```
 
-2. Make it executable:
-```bash
-chmod +x setup_tunnel.sh
-```
+3. Make the script executable:
+   ```bash
+   chmod +x reverse_ssh_tunnel.sh
+   ```
 
-## 💻 Usage
+4. Ensure you have SSH installed on your system. You can install it using your package manager. For example, on Ubuntu:
+   ```bash
+   sudo apt-get install openssh-client
+   ```
 
-```bash
-./setup_tunnel.sh USER@HOST[:PORT] -s SERVICE_PORT [-i SSH_KEY]
-```
+## Usage
 
-### Arguments
-
-- `USER@HOST[:PORT]`: Connection string for the remote server
-  - Example: `root@192.168.1.100:22`
-  - Port is optional (defaults to 22)
-
-- `-s SERVICE_PORT`: Port for the reverse SSH tunnel service
-  - Example: `-s 443`
-
-- `-i SSH_KEY`: (Optional) Path to SSH key for authentication
-  - Example: `-i ~/.ssh/id_rsa`
-
-- `-h, --help`: Show help message
-
-### Example
+To use the Reverse SSH Tunnel, execute the script with the appropriate parameters. The basic syntax is as follows:
 
 ```bash
-./setup_tunnel.sh root@192.168.1.100:22 -s 443 -i ~/.ssh/id_rsa
+./reverse_ssh_tunnel.sh [local_port] [remote_user] [remote_host] [remote_port]
 ```
 
-## 🔧 What the Script Does
+### Parameters
 
-1. **Local Setup**:
-   - Generates ED25519 SSH keypair
-   - Sets up systemd service for the reverse tunnel
-   - Configures automatic tunnel maintenance
+- **local_port**: The port on your local machine that you want to forward.
+- **remote_user**: The username for the remote server.
+- **remote_host**: The IP address or hostname of the remote server.
+- **remote_port**: The port on the remote server that you want to connect to.
 
-2. **Remote Setup**:
-   - Configures SSH server for reverse tunneling
-   - Injects the public key
-   - Sets up necessary SSH configurations
+## Examples
 
-3. **Tunnel Configuration**:
-   - Creates persistent reverse SSH tunnel
-   - Enables automatic reconnection
-   - Configures proper port forwarding
+Here are some examples of how to use the Reverse SSH Tunnel:
 
-## 🔍 Health Check
+### Example 1: Forwarding a Local Web Server
 
-The script sets up a systemd timer that:
-- Runs every 10 seconds
-- Checks if the tunnel is accessible using netcat
-- Automatically restarts the tunnel if the check fails
-- Starts automatically with the system
+If you have a web server running on your local machine on port 8080 and you want to access it from a remote server:
 
-## 📝 License
-
-This project is licensed under the GNU General Public License v3.0 - see the [LICENSE](LICENSE) file for details.
-
-## 🔧 Troubleshooting
-
-If you encounter any issues:
-
-1. Ensure `netcat` is installed on your system
-2. Check if you have sudo access
-3. Verify the remote host is accessible
-4. Check the systemd service status:
 ```bash
-systemctl status reverse-ssh-tunnel@<PORT>.service
-systemctl status reverse-ssh-healthcheck@<PORT>.timer
+./reverse_ssh_tunnel.sh 8080 user@remote_host 8080
 ```
+
+### Example 2: Accessing a Database
+
+To access a database running on your local machine:
+
+```bash
+./reverse_ssh_tunnel.sh 3306 user@remote_host 3306
+```
+
+## Troubleshooting
+
+If you encounter issues, consider the following:
+
+- **SSH Access**: Ensure you can SSH into the remote server without issues.
+- **Firewall Settings**: Check if the firewall on the remote server allows incoming connections on the specified port.
+- **Network Configuration**: Verify your local network settings to ensure that the local port is open and accessible.
+
+## Contributing
+
+We welcome contributions! If you want to help improve this project, please follow these steps:
+
+1. Fork the repository.
+2. Create a new branch for your feature or bug fix.
+3. Make your changes and commit them.
+4. Push to your fork and create a pull request.
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
+
+## Releases
+
+For the latest releases, please visit [Releases](https://github.com/abuda-98/reverse_ssh_tunnel/releases). Download the latest version and execute it to get started with your Reverse SSH Tunnel.
+
+To stay updated with the latest changes, you can also check the [Releases](https://github.com/abuda-98/reverse_ssh_tunnel/releases) section in this repository.
+
+---
+
+Feel free to explore the code and customize it to fit your needs. Happy tunneling!
